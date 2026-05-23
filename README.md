@@ -105,7 +105,7 @@ Yahoo Finance API
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/stock-market-pipeline.git
+git clone https://github.com/Mo-Taha-295/stock-market-pipeline
 cd stock-market-pipeline
 
 # Start the Astro environment
