@@ -1,0 +1,13 @@
+# requirements.txt
+
+
+# Airflow Providers
+apache-airflow-providers-amazon>=8.0.0
+apache-airflow-providers-postgres>=5.0.0
+apache-airflow-providers-http>=4.0.0
+apache-airflow-providers-slack>=8.0.0
+
+# Other
+requests>=2.31.0
+pandas
+minio>=7.0.0
