@@ -4,7 +4,7 @@ A production-grade batch data pipeline that extracts stock price data from Yahoo
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ![Pipeline Architecture](docs/architecture.jpg)
 
@@ -50,7 +50,7 @@ Yahoo Finance API
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology | Purpose |
 |---|---|---|
@@ -65,7 +65,7 @@ Yahoo Finance API
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```
 ├── dags/
@@ -122,7 +122,7 @@ Access the services:
 
 ---
 
-##  Airflow Connections
+## Airflow Connections
 
 Set up the following connections in Airflow UI → Admin → Connections:
 
@@ -166,7 +166,7 @@ You must have a Slack account to generate your OAuth token
 
 ---
 
-##  Dashboard
+## Dashboard
 
 The Metabase dashboard connects directly to PostgreSQL and includes:
 
@@ -177,7 +177,7 @@ The Metabase dashboard connects directly to PostgreSQL and includes:
 
 ---
 
-##  Data Schema
+## Data Schema
 
 ```sql
 CREATE TABLE public.stock_prices_dw (
@@ -192,7 +192,7 @@ CREATE TABLE public.stock_prices_dw (
 
 ---
 
-##  Dependencies
+## Dependencies
 
 ```txt
 # requirements.txt
@@ -213,7 +213,7 @@ g++
 
 ---
 
-## 🧠 Key Concepts Applied
+## Key Concepts Applied
 
 - **Sensor pattern** — poll API availability before extracting
 - **Idempotent loads** — safe to rerun without duplicate data
@@ -225,10 +225,9 @@ g++
 
 ---
 
-## 👤 Author
+## Author
 
-**Mohamed T Elsayed** — Data Engineer
-
+**Mohamed T Elsayed** — Data Engineer 
 ---
 
 ## 📄 License
