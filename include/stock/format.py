@@ -7,7 +7,7 @@ import io
 
 #  path value e.g.-> stock-data/NVDA/prices_data.json
 
-def format_stock_data(path):
+def format_stock_data(path : str) -> str:
     '''
     Format the stock data into a structured format (CSV).
     Args:

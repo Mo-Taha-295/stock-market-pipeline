@@ -10,7 +10,7 @@ def store_stock_data(data):
     Args:
         data (JSON): The stock data to be stored.
     '''
-
+    # Initialize the MinIO client from the helper function 
     client = get_minio_client()
     
     bucket_name = "stock-data"
