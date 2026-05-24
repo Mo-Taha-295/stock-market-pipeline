@@ -227,7 +227,7 @@ g++
 
 ## Author
 
-**Mohamed T Elsayed** — Data Engineer 
+**© 2026 Mohamed T Elsayed** — Data Engineer 
 ---
 
 ## 📄 License
