@@ -1,7 +1,6 @@
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 import json
-from io import BytesIO
-from include.helpers.minio import get_minio_client
+
 
 def store_stock_data(data):
     '''
