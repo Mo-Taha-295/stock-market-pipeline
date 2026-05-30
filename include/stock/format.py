@@ -1,13 +1,10 @@
-from include.helpers.minio import get_minio_client
-from airflow.hooks.base import BaseHook
-from minio import Minio
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 import pandas as pd
 import json
-import io
 
-#  path value e.g.-> stock-data/NVDA/prices_data.json
 
-def format_stock_data(path : str) -> str:
+
+def format_stock_data(path):
     '''
     Format the stock data into a structured format (CSV).
     Args:
@@ -16,16 +13,17 @@ def format_stock_data(path : str) -> str:
         path: where the formatted data is stored in MinIO
     '''
 
-    client = get_minio_client()
-    
+    # initiate the S3 hook to interact with MinIO
+    s3_hook = S3Hook(aws_conn_id='minio_conn')
+
+    # path value e.g.-> stock-data/NVDA/prices_data.json
     symbol = path.split('/')[1]   #  e.g. → "NVDA"  
     bucket = path.split('/')[0]  # Extract bucket name from the path
-    object_name = '/'.join(path.split('/')[1:])  # Extract object name from the path -> NVDA/prices_data.json
+    json_key = '/'.join(path.split('/')[1:])  # Extract object name from the path -> NVDA/prices_data.json
     
+    file_data = s3_hook.read_key(key=json_key, bucket_name=bucket)  # Read the JSON data from MinIO using the S3 hook
 
-    response = client.get_object(bucket, object_name)
-    file_data = response.read()
-    response.close()    
+   
     data = json.loads(file_data)  # Load the JSON data into a Python dictionary
     # Extract the relevant data and convert it to a DataFrame
     timestamps = data.get('timestamp', [])
@@ -39,17 +37,20 @@ def format_stock_data(path : str) -> str:
         'volume': indicators.get('volume', [])
     })
     df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
-    csv_buffer = io.StringIO()
-    df.to_csv(csv_buffer, index=False)  # Convert the DataFrame to CSV format
-    csv_string = csv_buffer.getvalue()
-    csv_bytes = csv_string.encode('utf-8')  # string → bytes
-    csv_object = f"{symbol}/prices_formatted.csv"
-    objw = client.put_object(
-        bucket_name=bucket,
-        object_name=csv_object,
-        data=io.BytesIO(csv_bytes),
-        length=len(csv_bytes),
-        content_type='text/csv'
-    )
-    return f'{objw.bucket_name}/{objw.object_name}'  # Return the full path where the formatted data is stored in MinIO
     
+    # Convert the DataFrame to a CSV string
+    csv_string = df.to_csv(index=False)
+
+    # Define the target path for the formatted CSV file in MinIO
+    csv_key = f"{symbol}/prices_formatted.csv"
+    s3_hook.load_bytes(
+        bucket_name=bucket,
+        key=csv_key,
+        bytes_data=csv_string.encode('utf-8'),
+        replace=True
+    )
+
+    
+    return f'{bucket}/{csv_key}'  # Return the full path where the formatted data is stored in MinIO
+    
+
