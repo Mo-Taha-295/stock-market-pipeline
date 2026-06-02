@@ -22,7 +22,7 @@ def store_stock_data(data):
     stock = json.loads(data)
     symbol = stock.get('meta', {}).get('symbol', 'unknown_stock') # Extract the stock symbol from the data
     data = json.dumps(stock , ensure_ascii=False).encode('utf-8')  # encode the stock data back to a JSON 
-    target_path =  f'NVDA/{symbol}_prices_data.json'
+    target_path =  f'{symbol}/{symbol}_prices_data.json'
     # Pass raw bytes directly without any wrappers
     s3_hook.load_bytes(
     bytes_data=data,
