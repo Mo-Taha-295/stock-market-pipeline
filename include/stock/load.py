@@ -67,7 +67,7 @@ def load_to_dw(path: str):
 
         except Exception:
             conn.rollback()  # ← if anything fails, nothing saved
-            raise
+            raise 
 
         finally:
             cursor.close()
