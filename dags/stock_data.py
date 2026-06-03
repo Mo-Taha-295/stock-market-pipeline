@@ -16,16 +16,17 @@ from include.stock.load import load_to_dw
     catchup=False,
     default_args={"retries": 2} ,
     tags=["stock_data"] , 
-    on_success_callback=SlackNotifier(
-        slack_conn_id="slack",
-        text="Stock data pipeline completed successfully! :tada:",
-        channel="new-channel"
-),  
-on_failure_callback=SlackNotifier(
-        slack_conn_id="slack",
-        text="Stock data pipeline failed! :x:",
-        channel="new-channel"
-)
+    max_active_runs=1,
+#     on_success_callback=SlackNotifier(
+#         slack_conn_id="slack",
+#         text="Stock data pipeline completed successfully! :tada:",
+#         channel="new-channel"
+# ),  
+# on_failure_callback=SlackNotifier(
+#         slack_conn_id="slack",
+#         text="Stock data pipeline failed! :x:",
+#         channel="new-channel"
+# )
 
 )
 def stock_market():
