@@ -196,13 +196,19 @@ CREATE TABLE public.stock_prices_dw (
 
 ```txt
 # requirements.txt
-astro-sdk-python[amazon,postgres]==1.8.1
+
+# Airflow Providers
 apache-airflow-providers-amazon>=8.0.0
 apache-airflow-providers-postgres>=5.0.0
 apache-airflow-providers-http>=4.0.0
 apache-airflow-providers-slack>=8.0.0
+
+# Other
 requests>=2.31.0
+pandas
 minio>=7.0.0
+boto3
+
 ```
 
 ```txt
