@@ -5,7 +5,8 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 def load_to_dw(path: str) -> None:
     """
-    Load stock data from MinIO into PostgreSQL DW using staging + UPSERT.
+        Load stock data from MinIO into PostgreSQL DW using staging + UPSERT
+
     """
 
     bucket_name, key = path.split("/", 1)
@@ -89,3 +90,5 @@ def load_to_dw(path: str) -> None:
 
     finally:
         conn.close()
+
+        
