@@ -1,9 +1,9 @@
 from airflow.exceptions import AirflowNotFoundException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
-def get_formatted_csv(path):
+def validate_csv_exists(path):
     '''
-    Get the formatted stock data as a CSV.
+    Validate that a CSV file exists at the specified path in MinIO.
     Args:
         path (str): The full path where the formatted data is stored in MinIO.
     Returns:

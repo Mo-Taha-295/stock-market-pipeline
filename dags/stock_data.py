@@ -6,15 +6,16 @@ from airflow.providers.slack.notifications.slack import SlackNotifier
 from include.stock.extract import fetch_stock_data
 from include.stock.store import store_stock_data
 from include.stock.format import format_stock_data
-from include.stock.getformatted import get_formatted_csv
+from include.stock.validatecsv import validate_csv_exists 
 from include.stock.load import load_to_dw
 
 
 @dag(
-    schedule="@daily",
+    # schedule="@daily", 
+    schedule=None,
     start_date=datetime(2026, 1, 1),
     catchup=False,
-    default_args={"retries": 2} ,
+    # default_args={"retries": 2} ,
     tags=["stock_data"] , 
     max_active_runs=1,
 #     on_success_callback=SlackNotifier(
@@ -65,7 +66,7 @@ def stock_market():
 
     @task
     def formatted_csv(formatted_path: str):
-        return get_formatted_csv(formatted_path)
+        return validate_csv_exists(formatted_path)
 
     @task
     def load_to(formatted_csv_path: str):
