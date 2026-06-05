@@ -1,6 +1,6 @@
 from airflow.hooks.base import BaseHook
 from airflow.sdk import dag, task
-from datetime import datetime
+from datetime import datetime , timedelta
 from airflow.sdk.bases.sensor import PokeReturnValue
 from airflow.providers.slack.notifications.slack import SlackNotifier
 from include.stock.extract import fetch_stock_data
@@ -10,29 +10,46 @@ from include.stock.validatecsv import validate_csv_exists
 from include.stock.load import load_to_dw
 
 
+# Define reusable notifications for success and failure
+success_notification = SlackNotifier(
+    slack_conn_id="slack",
+    text="Dag *{{dag.dag_id}}* completed successfully! for execution date {{ ds }} :tada:",
+    channel="new-channel"
+)
+failure_notification = SlackNotifier(
+    slack_conn_id="slack",
+    text="Dag *{{ dag.dag_id }}* FAILED for execution date *{{ ds }}*!\n"
+         "Check logs here: {{ ti.log_url }} :x:",
+    channel="new-channel"
+)
+
 @dag(
-    # schedule="@daily", 
-    schedule=None,
+    description="A DAG to fetch, store, format, validate and load stock data into a data warehouse.",
+    schedule="@daily", 
     start_date=datetime(2026, 1, 1),
     catchup=False,
-    # default_args={"retries": 2} ,
     tags=["stock_data"] , 
     max_active_runs=1,
-#     on_success_callback=SlackNotifier(
-#         slack_conn_id="slack",
-#         text="Stock data pipeline completed successfully! :tada:",
-#         channel="new-channel"
-# ),  
-# on_failure_callback=SlackNotifier(
-#         slack_conn_id="slack",
-#         text="Stock data pipeline failed! :x:",
-#         channel="new-channel"
-# )
+    max_consecutive_failed_dag_runs=3,
+    on_success_callback=success_notification,
+    on_failure_callback=failure_notification , 
+    dagrun_timeout = timedelta(hours=2),
+    default_args={
+        "retries": 3,                          
+        "retry_delay": timedelta(minutes=5),   
+        "execution_timeout": timedelta(minutes=20),
+        "email_on_failure":False, 
+        "email_on_retry":False,
+    }
 
 )
 def stock_market():
 
-    @task.sensor(poke_interval=60, timeout=360)
+    @task.sensor(
+            poke_interval=120, 
+            timeout=360, 
+            mode="reschedule",
+            exponential_backoff=True,)
     def is_api_available():
         import requests
         from requests.exceptions import ConnectionError, HTTPError
@@ -41,8 +58,8 @@ def stock_market():
             api = BaseHook.get_connection("stock_api")
             url = f"{api.host}{api.extra_dejson.get('endpoint')}{symbol}?metrics=high?&interval=1d&range=1y"
             r = requests.get(url, headers=api.extra_dejson.get('headers'))
-            r.raise_for_status()
-            return PokeReturnValue(is_done=r.status_code == 200, xcom_value=url)
+            r.raise_for_status() 
+            return PokeReturnValue(is_done=True, xcom_value=url) # if we reach this line, status MUST be 200
         except ConnectionError:
             return PokeReturnValue(is_done=False)
         except HTTPError as err:
