@@ -42,7 +42,7 @@ def format_stock_data(path):
     csv_string = df.to_csv(index=False)
 
     # Define the target path for the formatted CSV file in MinIO
-    csv_key = f"{symbol}/prices_formatted.csv"
+    csv_key = f"{symbol}/{symbol}_prices_formatted.csv"
     s3_hook.load_bytes(
         bucket_name=bucket,
         key=csv_key,
